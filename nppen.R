@@ -22,7 +22,11 @@
 #------------------------------------------------------------
 
 nppen <- function(X, Y) {
-	
+
+	# vector sizes
+	n = nrow(X)
+	m = nrow(Y)
+
 	# compute distance between all points of Y and the centroid of X
 	d2 = mahalanobis(Y, mean(X), cov(X))
 
@@ -50,6 +54,10 @@ nppen.ibanez <- function(X, Y) {
 	#   k = as.numeric(Zs[1,])
 	#   k %*% solve(cov(Zs)) %*% k
 	# which is a form close to what Ibanez uses
+
+	# vector sizes
+	n = nrow(X)
+	m = nrow(Y)
 
 	p = c()
 	for (iy in 1:m) {
