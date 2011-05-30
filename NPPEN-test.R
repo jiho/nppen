@@ -17,7 +17,7 @@ X = data.frame(
 )
 
 # prediction matrix
-m = 100
+m = 50
 Y = data.frame(
 	T = 1+runif(m)*3,
 	S = 36+runif(m)/2,
@@ -25,7 +25,14 @@ Y = data.frame(
 )
 
 source("nppen.R")
-nppen(X, Y)
+
 system.time(nppen(X, Y))
+system.time(nppen.ibanez(X, Y))
+system.time(nppen.vector(X, Y))
+
+nppen(X, Y)
+nppen.ibanez(X, Y)
+nppen.vector(X, Y)
+
 
 # }

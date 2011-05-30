@@ -43,6 +43,39 @@ nppen <- function(X, Y) {
 		p[iy] = sum(d2[iy] > d2m)/n
 	}
 	
+
+	return(p)
+}
+
+nppen.vector <- function(X, Y) {
+
+	# vector sizes
+	n = nrow(X)
+	m = nrow(Y)
+
+	# compute distance between all points of Y and the centroid of X
+	d2 = mahalanobis(Y, mean(X), cov(X))
+
+	# compute probabilities of occurrence of those distances
+	# to do this compute the distance between each element of X and the rest of X+each element of Y. For each element of Y count how many of these permutations lead to a distance larger than the one computed.
+	Zs = apply(Y, 1, function(y, XX) {
+		return(rbind(y, XX))
+	}, XX=X)
+
+	d2ms = lapply(Zs, function(Z, n) {
+		d2m = c()
+		for (i in 1:n) {
+			Zi = Z[-(i+1),]
+			d2m[i] = mahalanobis(Z[i+1,], mean(Zi), cov(Zi))
+		}
+		return(d2m)
+	}, n=n)
+
+	p = c()
+	for (i in 1:m) {
+		p[i] = sum(d2[i] > d2ms[[i]]) / n
+	}
+
 	return(p)
 }
 
