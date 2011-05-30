@@ -41,3 +41,32 @@ nppen <- function(X, Y) {
 	
 	return(p)
 }
+
+nppen.ibanez <- function(X, Y) {
+	# note about mahalanobis computation
+	#   mahalanobis(Z[1,], mean(Z), cov(Z))
+	# is equivalent to
+	#   Zs = as.data.frame(scale(Z))
+	#   k = as.numeric(Zs[1,])
+	#   k %*% solve(cov(Zs)) %*% k
+	# which is a form close to what Ibanez uses
+
+	p = c()
+	for (iy in 1:m) {
+		# distance from the current element of Y to centroid of X
+		Z = rbind(Y[iy,], X)
+		Zs = scale(Z)
+		k = Zs[1,] - apply(Zs[-1,], 2, mean)
+		invCov = solve(cov(Zs))
+		e0 = as.numeric(k %*% invCov %*% k)
+
+		d2m = c()
+		for (ix in 1:n) {
+			# distance from the current element of X and the centoid of the rest of X + the current y
+			k = Zs[1+ix,] - apply(Zs[-(1+ix),], 2, mean)
+			d2m[ix] = k %*% invCov %*% k	
+		}
+		p[iy] = sum(e0 > d2m)/n
+	}
+	return(p)
+}
