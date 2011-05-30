@@ -1,12 +1,12 @@
 #
 #     Non-Parametric Probabilitic Ecological Niche
 #
-#   Compute the probability of presence of a given taxon based on 
+#   Compute the probability of presence of a given taxon based on
 #   the environmental parameters
 #
 #   X	matrix or data.frame containing the environmental data at
 #   	locations of presence
-#   	
+#
 #   Y	matrix or data.frame containing the environmental data at
 #   	the points where the probability of presence needs to be
 #   	predicted (i.e., usually on a grid)
@@ -42,7 +42,6 @@ nppen <- function(X, Y) {
 		}
 		p[iy] = sum(d2[iy] > d2m)/n
 	}
-	
 
 	return(p)
 }
@@ -105,7 +104,7 @@ nppen.ibanez <- function(X, Y) {
 		for (ix in 1:n) {
 			# distance from the current element of X and the centoid of the rest of X + the current y
 			k = Zs[1+ix,] - apply(Zs[-(1+ix),], 2, mean)
-			d2m[ix] = k %*% invCov %*% k	
+			d2m[ix] = k %*% invCov %*% k
 		}
 		p[iy] = sum(e0 > d2m)/n
 	}
