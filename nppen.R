@@ -1,112 +1,85 @@
 #
 #     Non-Parametric Probabilitic Ecological Niche
 #
-#   Compute the probability of presence of a given taxon based on
-#   the environmental parameters
-#
-#   X	matrix or data.frame containing the environmental data at
-#   	locations of presence
-#
-#   Y	matrix or data.frame containing the environmental data at
-#   	the points where the probability of presence needs to be
-#   	predicted (i.e., usually on a grid)
-#
-#   Beaugrand, G, Lenoir, S, Ibañez, F, and Manté, C
-#   A new model to assess the probability of occurrence of a species,
-#   based on presence-only data
-#   Marine Ecology Progress Series, 424:175--190, 2011
+#     Beaugrand, G, Lenoir, S, Ibañez, F, and Manté, C
+#     A new model to assess the probability of occurrence of a species,
+#     based on presence-only data
+#     Marine Ecology Progress Series, 424:175--190, 2011
 #
 # (c) Copyright 2011 Jean-Olivier Irisson
 #     GNU General Public License v3
 #
 #------------------------------------------------------------
 
-nppen <- function(X, Y) {
+rasterize <- function(X, n=10, precisions=sapply(lapply(X,range),diff)/n)
+#
+#   Reduce the precision of all columns of a data.frame to bins
+#   and count the number of occurence of each combination of bin values
+#   This is a bit like reducing the precise information on locations
+#   in a 2D plane to pixels of a given grey level, hence the name
+#
+#   X           matrix of data
+#
+#   n           scalar, number of bins for all columns of the data
+#
+#   precisions  vector, overrides n, the precision which is used to
+#               cut each column of the data into bins
+#
+{
+    # Checks
+    if (length(precisions) != ncol(X)) {
+        stop("The vector of precisions does not have as many elements as there are columns in the data X")
+    }
+
+    # Round columns to the given precision
+    require("plyr")
+    for (j in 1:ncol(X)) {
+        X[,j] = round_any(X[,j], accuracy=precisions[j])
+    }
+
+   # Compute how many times each combination of values is present
+   X = count(X, vars=names(X))
+
+   return(X)
+}
+
+nppen <- function(X, Y)
+#
+#   Compute the probability of presence of a given taxon based on
+#   the environmental descriptors
+#
+#   X	matrix or data.frame containing the environmental data at
+#   	locations of presence (possibly rasterized)
+#
+#   Y	matrix or data.frame containing the environmental data at
+#   	the points where the probability of presence needs to be
+#   	predicted (i.e., usually on a grid)
+#
+{
 
 	# vector sizes
 	n = nrow(X)
 	m = nrow(Y)
 
-	# compute distance between all points of Y and the centroid of X
-	d2 = mahalanobis(Y, mean(X), cov(X))
+	# compute reference distance for each point of Y:
+	# the actual Mahalanobis distance to X
+	d2 = mahalanobis(Y, colMeans(X), cov(X))
 
-	# compute probabilities of occurrence of those distances
-	# to do this compute the distance between each element of X and the rest of X+each element of Y. For each element of Y count how many of these permutations lead to a distance larger than the one computed.
+	# compute the probabilities of occurrence of those distances
+	# for each element of Y (y_j), swap it with an element of X (x_i)
+	# and compute the distance from x_i to X - x_i + y_j
+	# then count how many of these permutations lead to a distance
+	# larger than the reference one
 	p = c()
 	for (iy in 1:m) {
 		y = Y[iy,]
 		d2m = c()
 		for (ix in 1:n) {
 			Z = rbind(y, X[-ix,])
-			d2m[ix] = mahalanobis(X[ix,], mean(Z), cov(Z))
+			d2m[ix] = mahalanobis(X[ix,], colMeans(Z), cov(Z))
 		}
-		p[iy] = sum(d2[iy] > d2m)/n
+		p[iy] = sum(d2m > d2[iy]) / n
 	}
 
-	return(p)
-}
-
-nppen.vector <- function(X, Y) {
-
-	# vector sizes
-	n = nrow(X)
-	m = nrow(Y)
-
-	# compute distance between all points of Y and the centroid of X
-	d2 = mahalanobis(Y, mean(X), cov(X))
-
-	# compute probabilities of occurrence of those distances
-	# to do this compute the distance between each element of X and the rest of X+each element of Y. For each element of Y count how many of these permutations lead to a distance larger than the one computed.
-	Zs = apply(Y, 1, function(y, XX) {
-		return(rbind(y, XX))
-	}, XX=X)
-
-	d2ms = lapply(Zs, function(Z, n) {
-		d2m = c()
-		for (i in 1:n) {
-			Zi = Z[-(i+1),]
-			d2m[i] = mahalanobis(Z[i+1,], mean(Zi), cov(Zi))
-		}
-		return(d2m)
-	}, n=n)
-
-	p = c()
-	for (i in 1:m) {
-		p[i] = sum(d2[i] > d2ms[[i]]) / n
-	}
-
-	return(p)
-}
-
-nppen.ibanez <- function(X, Y) {
-	# note about mahalanobis computation
-	#   mahalanobis(Z[1,], mean(Z), cov(Z))
-	# is equivalent to
-	#   Zs = as.data.frame(scale(Z))
-	#   k = as.numeric(Zs[1,])
-	#   k %*% solve(cov(Zs)) %*% k
-	# which is a form close to what Ibanez uses
-
-	# vector sizes
-	n = nrow(X)
-	m = nrow(Y)
-
-	p = c()
-	for (iy in 1:m) {
-		# distance from the current element of Y to centroid of X
-		Z = rbind(Y[iy,], X)
-		Zs = scale(Z)
-		k = Zs[1,] - apply(Zs[-1,], 2, mean)
-		invCov = solve(cov(Zs))
-		e0 = as.numeric(k %*% invCov %*% k)
-
-		d2m = c()
-		for (ix in 1:n) {
-			# distance from the current element of X and the centoid of the rest of X + the current y
-			k = Zs[1+ix,] - apply(Zs[-(1+ix),], 2, mean)
-			d2m[ix] = k %*% invCov %*% k
-		}
-		p[iy] = sum(e0 > d2m)/n
-	}
 	return(p)
 }
