@@ -100,6 +100,9 @@ nppen <- function(X, Y, fast=TRUE)
 
             # compute the probability
     		p[iy] = sum(d2m > d2[iy]) / n
+    		# NB: it is actually faster to do this in the loop than to store
+    		#     all values in a matrix and compute the probabilities on the
+    		#     matrix. I don't understand why, but...
     	}
 
 	} else {
