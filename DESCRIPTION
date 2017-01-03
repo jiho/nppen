@@ -10,4 +10,6 @@ Description: Implementation of Non-Parametric Probabilistic Ecological Niche
     the occurrence of species based on environmental conditions.
 License: GPL-3
 LazyData: TRUE
+Imports:
+    dplyr
 RoxygenNote: 5.0.1

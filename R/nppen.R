@@ -11,38 +11,6 @@
 #
 #------------------------------------------------------------
 
-rasterize <- function(X, n=10, precisions=sapply(lapply(X,range),diff)/n)
-#
-#   Reduce the precision of all columns of a data.frame to bins
-#   and count the number of occurrence of each combination of bin values
-#   This is a bit like reducing the precise information on locations
-#   in a 2D plane to pixels of a given grey level, hence the name
-#
-#   X           matrix of data
-#
-#   n           scalar, number of bins for all columns of the data
-#
-#   precisions  vector, overrides n, the precision which is used to
-#               cut each column of the data into bins
-#
-{
-    # Checks
-    if (length(precisions) != ncol(X)) {
-        stop("The vector of precisions does not have as many elements as there are columns in the data X")
-    }
-
-    # Round columns to the given precision
-    require("plyr")
-    for (j in 1:ncol(X)) {
-        X[,j] = round_any(X[,j], accuracy=precisions[j])
-    }
-
-   # Compute how many times each combination of values is present
-   X = count(X, vars=names(X))
-
-   return(X)
-}
-
 nppen <- function(X, Y, fast=TRUE)
 #
 #   Compute the probability of presence of a given taxon based on the
