@@ -10,6 +10,8 @@
 #'
 #' @references
 #' Beaugrand, G., Lenoir, S., Ibañez, F., and Manté, C. (2011) _A new model to assess the probability of occurrence of a species, based on presence-only data_. Marine Ecology Progress Series, *424*, 175-190. \url{http://www.int-res.com/abstracts/meps/v424/p175-190/}
+#'
+#' @encoding UTF-8
 #' @export
 #'
 #' @examples
