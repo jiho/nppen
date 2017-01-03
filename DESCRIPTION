@@ -11,5 +11,6 @@ Description: Implementation of Non-Parametric Probabilistic Ecological Niche
 License: GPL-3
 LazyData: TRUE
 Imports:
-    dplyr
+    dplyr,
+    stats
 RoxygenNote: 5.0.1
