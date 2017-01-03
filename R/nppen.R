@@ -1,5 +1,5 @@
 #
-#     Non-Parametric Probabilitic Ecological Niche
+#     Non-Parametric Probabilistic Ecological Niche
 #
 #     Beaugrand, G, Lenoir, S, Ibañez, F, and Manté, C
 #     A new model to assess the probability of occurrence of a species,
@@ -14,7 +14,7 @@
 rasterize <- function(X, n=10, precisions=sapply(lapply(X,range),diff)/n)
 #
 #   Reduce the precision of all columns of a data.frame to bins
-#   and count the number of occurence of each combination of bin values
+#   and count the number of occurrence of each combination of bin values
 #   This is a bit like reducing the precise information on locations
 #   in a 2D plane to pixels of a given grey level, hence the name
 #
