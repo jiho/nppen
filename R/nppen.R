@@ -2,9 +2,9 @@
 #'
 #' Compute the probability of presence of a taxon based on the environment.
 #
-#' @param X matrix or data.frame containing the environmental data at locations of presence (possibly rasterized using \code{\link{rasterize}}).
-#' @param Y matrix or data.frame containing the environmental data at the points where the probability of presence needs to be predicted (i.e., usually on a grid).
-#' @param fast when TRUE, a single total covariance matrix is used for each element of Y, instead of one matrix per permutation (i.e. per line of X). This is immensely faster and leads to only marginal (<2\%) changes in the predicted probabilities as long as X is large and points of Y are distributed within the range covered by X (which they should be for the model to make sense anyway).
+#' @param X Matrix or data.frame containing the environmental data at locations of presence (possibly rasterized using \code{\link{rasterize}}).
+#' @param Y Matrix or data.frame containing the environmental data at the points where the probability of presence needs to be predicted (i.e., usually on a grid).
+#' @param fast When TRUE, a single total covariance matrix is used for each element of Y, instead of one matrix per permutation (i.e. per line of X). This is immensely faster and leads to only marginal (<2\%) changes in the predicted probabilities as long as X is large and points of Y are distributed within the range covered by X (which they should be for the model to make sense anyway).
 #'
 #' @return A vector of probabilities of length \code{nrow(Y)}.
 #'
@@ -94,7 +94,7 @@ nppen <- function(X, Y, fast=TRUE) {
     for (iy in 1:m) {
       y <- Y[iy,]
 
-      d2m <- rep(-1, n)
+      d2m <- rep(-1, n) # pre-allocating is a bit faster
       for (ix in 1:n) {
         # create the matrix X - x_i + y_j
         Z <- rbind(y, X[-ix,])
