@@ -4,14 +4,16 @@
 \alias{rasterize}
 \title{Bin environmental data}
 \usage{
-rasterize(X, n = 10, precisions = NULL)
+rasterize(X, n = 10, precision = NULL, breaks = NULL)
 }
 \arguments{
 \item{X}{matrix (or data.frame) of environmental data.}
 
-\item{n}{number of bins for each variable in the data (just one number).}
+\item{n}{number of bins for each variable in the data (either one number or a vector with one number per column of \code{X}).}
 
-\item{precisions}{the precision used to cut each column of the data into bins (a vector, as long as the number of columns of X); overrides \code{n}.}
+\item{precision}{the precision used to cut each column of the data into bins (either one number or a vector with one number per column of \code{X}); overrides \code{n}.}
+
+\item{breaks}{list of vectors of cut points for each variable (should have as many elements as columns in \code{X}); overrides \code{n} and \code{precision}.}
 }
 \value{
 A data.frame with all observed combinations of binned variables and a column \code{n} containing the number of observations of this combination. Each bin is identified by the average value of each variable in the bin. Therefore, it changes from bin to bin, i.e. even with a precision of 0.1, binned values are not all 0.05, 0.15, etc.
@@ -22,6 +24,9 @@ Bin each environment variable and count the number of observation of all combina
 \examples{
 X <- data.frame(a=runif(100), b=runif(100)*10)
 rasterize(X, n=2)
-rasterize(X, precisions=c(0.5, 5))
+rasterize(X, n=c(2,4))
+rasterize(X, precision=1)
+rasterize(X, precision=c(0.5, 5))
+rasterize(X, breaks=list(c(0, 0.5, 1), c(0, 2, 4, 10)))
 }
 
