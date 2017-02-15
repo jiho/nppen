@@ -115,28 +115,28 @@ nppen <- function(X, Y, fast=TRUE) {
   return(p)
 }
 
-# # Reference implementation (slow but accurate)
-# nppen_ref <- function(X, Y) {
-#   X <- as.matrix(X)
-#   Y <- as.matrix(Y)
-#
-#   n <- nrow(X)
-#   m <- nrow(Y)
-#
-#   # compute reference distance for each point of Y
-#   d2 <- stats::mahalanobis(Y, colMeans(X), stats::cov(X))
-#
-#   # compute the probabilities of occurrence of those distances
-#   p <- c()
-#   for (iy in 1:m) {
-#     y <- Y[iy,]
-#     d2m <- c()
-#     for (ix in 1:n) {
-#       Z <- rbind(y, X[-ix,])
-#       d2m[ix] <- stats::mahalanobis(X[ix,], colMeans(Z), stats::cov(Z))
-#     }
-#     p[iy] <- sum(d2m > d2[iy]) / n
-#   }
-#
-#   return(p)
-# }
+# Reference implementation (slow but accurate)
+nppen_ref <- function(X, Y) {
+  X <- as.matrix(X)
+  Y <- as.matrix(Y)
+
+  n <- nrow(X)
+  m <- nrow(Y)
+
+  # compute reference distance for each point of Y
+  d2 <- stats::mahalanobis(Y, colMeans(X), stats::cov(X))
+
+  # compute the probabilities of occurrence of those distances
+  p <- c()
+  for (iy in 1:m) {
+    y <- Y[iy,]
+    d2m <- c()
+    for (ix in 1:n) {
+      Z <- rbind(y, X[-ix,])
+      d2m[ix] <- stats::mahalanobis(X[ix,], colMeans(Z), stats::cov(Z))
+    }
+    p[iy] <- sum(d2m > d2[iy]) / n
+  }
+
+  return(p)
+}
