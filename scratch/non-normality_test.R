@@ -60,10 +60,10 @@ ggplot(Yt) +
   facet_wrap(~source) + scale_fill_distiller(palette="Blues") +
   coord_fixed() + scale_x_continuous(expand=c(0,0)) + scale_y_continuous(expand=c(0,0))
 ggplot() +
-  geom_density2d(aes(V1, V2), data=Xt, colour="red", n=200, h=c(1.5, 1.5)) +
-  geom_contour(aes(V1, V2, z=proba), data=Yt, colour="black") +
-  facet_wrap(~source)
-  coord_fixed() + scale_x_continuous(expand=c(0,0)) + scale_y_continuous(expand=c(0,0))
+  geom_point(aes(V1, V2), data=Xt, colour="black", size=0.2, alpha=0.1) +
+  geom_density2d(aes(V1, V2), data=Xt, colour="black", n=200, h=c(1.5, 1.5)) +
+  geom_contour(aes(V1, V2, z=proba), data=Yt, colour="red") +
+  facet_wrap(~source) + coord_fixed()+ scale_x_continuous(expand=c(0,0)) + scale_y_continuous(expand=c(0,0))
 # -> Multimodal is horrid
 #    Skewed is made symmetrical, not ideal
 #    Normal is re-centered which is actually better than the estimation from the data
