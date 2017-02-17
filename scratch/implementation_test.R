@@ -42,8 +42,16 @@ all(p_ref == p_mine)
 # [1] TRUE
 # -> faster and exactly equal
 
-# exact computation vs fast approximation
+# R implementation vs MATLAB
 system.time(Y$p_slow <- nppen(X, Y[,1:2], fast=FALSE))
+# read result from MATLAB
+Y$p_matlab <- read.table("Yprobs_NPPEN_Matlab.csv")[,1]
+all(Y$p_slow == Y$p_matlab)
+# [1] TRUE
+# -> exactly equal
+
+# exact computation vs fast approximation
+# code = cf above
 #   user  system elapsed
 # 34.285   2.776  37.154
 system.time(Y$p_fast <- nppen(X, Y[,1:2], fast=TRUE))
@@ -53,8 +61,9 @@ system.time(Y$p_fast <- nppen(X, Y[,1:2], fast=TRUE))
 Y$error <- abs(Y$p_slow - Y$p_fast)
 Y$percent_error <- Y$error / Y$p_slow * 100
 summary(Y$error)
-#     Min.  1st Qu.   Median     Mean  3rd Qu.     Max.
-# 0.000000 0.000000 0.000000 0.000746 0.001000 0.005000
+#    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.
+# 0.00000 0.00000 0.00100 0.00076 0.00100 0.00400
+qplot(Y$error, binwidth=0.001)
 # -> orders of magnitude faster and relatively accurate when close to the centre of the niche
 
 # what is the source of error and where are the errors
