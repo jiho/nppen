@@ -4,7 +4,7 @@
 \alias{nppen}
 \title{Non-Parametric Probabilistic Ecological Niche}
 \usage{
-nppen(X, Y, fast = TRUE)
+nppen(X, Y, fast = TRUE, cores = 1)
 }
 \arguments{
 \item{X}{Matrix or data.frame containing the environmental data at locations of presence (possibly rasterized using \code{\link{rasterize}}).}
@@ -12,6 +12,8 @@ nppen(X, Y, fast = TRUE)
 \item{Y}{Matrix or data.frame containing the environmental data at the points where the probability of presence needs to be predicted (i.e., usually on a grid).}
 
 \item{fast}{When TRUE, a single total covariance matrix is used for each element of Y, instead of one matrix per permutation (i.e. per line of X). This is immensely faster and leads to only marginal (<2\%) changes in the predicted probabilities as long as X is large and points of Y are distributed within the range covered by X (which they should be for the model to make sense anyway).}
+
+\item{cores}{Number of computing cores to use; the parallelisation is done in Y because often Y is much larger than X and, when \code{fast=TRUE} the size of X is not too much of a problem.}
 }
 \value{
 A vector of probabilities of length \code{nrow(Y)}.
@@ -52,6 +54,15 @@ X_binned_common <- subset(X_binned_common, select=-n)
 points(X_binned_common, pch=16)
 nppen(X_binned_common, Y, fast=FALSE)
 # reducing to common observations helps better represent the initial niche
+
+\dontrun{# Parallel performance test
+set.seed(1)
+X <- data.frame(temp=rnorm(1000, 15, 3), sal=rnorm(1000, 37, 1))
+# define target points: one well inside the niche, one on the border
+Y <- data.frame(temp=rnorm(10000, 15, 2), sal=rnorm(10000, 37, 0.7))
+system.time(y <- nppen(X, Y, cores=1))
+system.time(y <- nppen(X, Y, cores=4))
+}
 }
 \references{
 Beaugrand, G., Lenoir, S., Ibañez, F., and Manté, C. (2011) _A new model to assess the probability of occurrence of a species, based on presence-only data_. Marine Ecology Progress Series, *424*, 175-190. \url{http://www.int-res.com/abstracts/meps/v424/p175-190/}

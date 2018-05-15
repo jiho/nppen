@@ -12,5 +12,6 @@ License: GPL-3
 LazyData: TRUE
 Encoding: UTF-8
 Imports:
-    stats
+    stats,
+    parallel
 RoxygenNote: 6.0.1

@@ -5,6 +5,7 @@
 #' @param X Matrix or data.frame containing the environmental data at locations of presence (possibly rasterized using \code{\link{rasterize}}).
 #' @param Y Matrix or data.frame containing the environmental data at the points where the probability of presence needs to be predicted (i.e., usually on a grid).
 #' @param fast When TRUE, a single total covariance matrix is used for each element of Y, instead of one matrix per permutation (i.e. per line of X). This is immensely faster and leads to only marginal (<2\%) changes in the predicted probabilities as long as X is large and points of Y are distributed within the range covered by X (which they should be for the model to make sense anyway).
+#' @param cores Number of computing cores to use; the parallelisation is done in Y because often Y is much larger than X and, when \code{fast=TRUE} the size of X is not too much of a problem.
 #'
 #' @return A vector of probabilities of length \code{nrow(Y)}.
 #'
@@ -46,7 +47,16 @@
 #' points(X_binned_common, pch=16)
 #' nppen(X_binned_common, Y, fast=FALSE)
 #' # reducing to common observations helps better represent the initial niche
-nppen <- function(X, Y, fast=TRUE) {
+#'
+#' \dontrun{# Parallel performance test
+#' set.seed(1)
+#' X <- data.frame(temp=rnorm(1000, 15, 3), sal=rnorm(1000, 37, 1))
+#' # define target points: one well inside the niche, one on the border
+#' Y <- data.frame(temp=rnorm(10000, 15, 2), sal=rnorm(10000, 37, 0.7))
+#' system.time(y <- nppen(X, Y, cores=1))
+#' system.time(y <- nppen(X, Y, cores=4))
+#' }
+nppen <- function(X, Y, fast=TRUE, cores=1) {
   # convert to matrices, for speed
   X <- as.matrix(X)
   Y <- as.matrix(Y)
@@ -70,10 +80,9 @@ nppen <- function(X, Y, fast=TRUE) {
   #   and compute the distance from x_i to X - x_i + y_j
   #   then count how many of these permutations lead to a distance
   #   larger than distance from y_j to X
-  p <- rep(-1, m)  # NB: pre-allocating the vector is a bit faster
   if (fast) {
 
-    for (iy in 1:m) {
+    p <- parallel::mcmapply(function(iy) {
       y <- Y[iy,]
 
       # use a global matrix which is y + X instead of swapping y for
@@ -84,15 +93,15 @@ nppen <- function(X, Y, fast=TRUE) {
       d2m <- rowSums((Xc %*% invCov) * Xc)
 
       # compute the probability
-      p[iy] <- sum(d2m > d2[iy]) / n
+      sum(d2m > d2[iy]) / n
       # NB: it is actually faster to do this in the loop than to store
       #     all values in a matrix and compute the probabilities on the
       #     matrix. I don't understand why, but...
-    }
+    }, 1:m)
 
   } else {
 
-    for (iy in 1:m) {
+    p <- parallel::mcmapply(function(iy) {
       y <- Y[iy,]
 
       d2m <- rep(-1, n) # pre-allocating is a bit faster
@@ -108,8 +117,8 @@ nppen <- function(X, Y, fast=TRUE) {
       }
 
       # compute the probability
-      p[iy] <- sum(d2m > d2[iy]) / n
-    }
+      sum(d2m > d2[iy]) / n
+    }, 1:m)
 
   }
 
