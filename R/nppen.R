@@ -90,6 +90,7 @@ nppen <- function(X, Y, fast=TRUE, cores=1) {
       Z <- rbind(y, X)
       inCov <- solve(stats::cov(Z))
       Xc <- t(t(X) - colMeans(Z))
+      rm(Z)
       d2m <- rowSums((Xc %*% invCov) * Xc)
 
       # compute the probability
@@ -112,6 +113,7 @@ nppen <- function(X, Y, fast=TRUE, cores=1) {
         # compute mahalanobis' distance
         Xc <- X[ix,] - colMeans(Z)
         invCov <- solve(stats::cov(Z))
+        rm(Z)
         d2m[ix] <- c(Xc %*% invCov %*% Xc)
         # NB: since X[ix,] is a vector, we don't have to worry about the transpositions and the rowSums
       }
