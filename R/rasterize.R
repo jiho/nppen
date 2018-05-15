@@ -61,16 +61,16 @@ rasterize <- function(X, n=10, precision=NULL, breaks=NULL) {
   }
   
   # compute average value inside each bin
-  names(X_binned) <- paste0("b", names(X_binned))
-  XX <- cbind(X_binned, X)
-  bins <- dplyr::summarise_each_(dplyr::group_by_(XX, .dots=names(X_binned)), funs="mean", vars=names(X)) 
+  Xb <- aggregate(X, by=X_binned, FUN="mean", na.rm=TRUE)
 
   # compute number of occurrences in each bin
-  counts <- dplyr::count_(X_binned, vars=names(X_binned))
+  Xn <- as.data.frame(table(X_binned))
+  # remove bins with 0 occurences which are not counted in the aggregate call above
+  Xn <- subset(Xn, Freq > 0)
 
   # combine bin values and counts
-  C <- data.frame(bins[,names(X)], n=counts$n)
-  
+  C <- data.frame(Xb[,-(1:ncol(X))], n=Xn$Freq)
+
   return(C)
 }
 
