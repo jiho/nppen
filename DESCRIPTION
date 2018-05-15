@@ -1,7 +1,7 @@
 Package: nppen
 Type: Package
 Title: Non-Parametric Probabilistic Ecological Niche
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: person(given = "Jean-Olivier", family = "Irisson", email = "irisson@normalesup.org", role = c("aut", "cre"))
 Description: Implementation of Non-Parametric Probabilistic Ecological Niche
     (NPPEN) from Beaugrand, Lenoir, Ibañez, and Manté. "A new model to assess the
