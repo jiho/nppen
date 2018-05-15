@@ -31,7 +31,7 @@ rasterize <- function(X, n=10, precision=NULL, breaks=NULL) {
     for (j in 1:nX) {
       X_binned[,j] <- cut(X[,j], breaks=breaks[[j]])
     }
-    
+
   } else if (!is.null(precision)) {
     # safety check
     if (length(precision) == 1) {
@@ -43,7 +43,7 @@ rasterize <- function(X, n=10, precision=NULL, breaks=NULL) {
     for (j in 1:nX) {
       X_binned[,j] <- round_any(X[,j], accuracy=precision[j])
     }
-    
+
   } else {
     # safety check
     if (length(n) == 1) {
@@ -59,7 +59,7 @@ rasterize <- function(X, n=10, precision=NULL, breaks=NULL) {
       X_binned[,j] <- cut(X[,j], breaks=n[j])
     }
   }
-  
+
   # compute average value inside each bin
   Xb <- aggregate(X, by=X_binned, FUN="mean", na.rm=TRUE)
 

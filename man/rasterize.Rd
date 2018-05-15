@@ -29,4 +29,3 @@ rasterize(X, precision=1)
 rasterize(X, precision=c(0.5, 5))
 rasterize(X, breaks=list(c(0, 0.5, 1), c(0, 2, 4, 10)))
 }
-
