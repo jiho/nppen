@@ -20,8 +20,8 @@
 #' # define target points: one well inside the niche, one on the border
 #' Y <- data.frame(temp=c(15, 18.7), sal=c(37, 38.7))
 #' # represent both in environmental space
-#' plot(X$temp, X$sal)
-#' points(Y$temp, Y$sal, col="red")
+#' plot(X)
+#' points(Y, col="red")
 #' # compute probability of presence
 #' nppen(X, Y, fast=FALSE)
 #' nppen(X, Y, fast=TRUE)
@@ -32,18 +32,19 @@
 #' X_binned <- rasterize(X)
 #' nrow(X)
 #' nrow(X_binned)
-#' plot(X_binned$temp, X_binned$sal)
-#' points(Y$temp, Y$sal, col="red")
+#' plot(sal ~ temp, X_binned)
+#' points(Y, col="red")
 #' # compute probability of presence
-#' nppen(X_binned[,-ncol(X_binned)], Y, fast=FALSE) # NB: remove column `n`
+#' nppen(subset(X_binned, select=-n), Y, fast=FALSE) # NB: remove column `n`
 #' # simply binning loose some information regarding where the centre of the
 #' # niche is and the niche appear more spread (hence higher probability for
 #' # the second point here).
 #'
 #' # only keep common observations (= observed more than once)
 #' X_binned_common <- X_binned[X_binned$n > 1,]
-#' points(X_binned_common$temp, X_binned_common$sal, pch=16)
-#' nppen(X_binned_common[,-ncol(X_binned)], Y, fast=FALSE)
+#' X_binned_common <- subset(X_binned_common, select=-n)
+#' points(X_binned_common, pch=16)
+#' nppen(X_binned_common, Y, fast=FALSE)
 #' # reducing to common observations helps better represent the initial niche
 nppen <- function(X, Y, fast=TRUE) {
   # convert to matrices, for speed
