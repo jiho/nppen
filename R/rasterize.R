@@ -61,12 +61,12 @@ rasterize <- function(X, n=10, precision=NULL, breaks=NULL) {
   }
 
   # compute average value inside each bin
-  Xb <- aggregate(X, by=X_binned, FUN="mean", na.rm=TRUE)
+  Xb <- stats::aggregate(X, by=X_binned, FUN="mean", na.rm=TRUE)
 
   # compute number of occurrences in each bin
   Xn <- as.data.frame(table(X_binned))
   # remove bins with 0 occurences which are not counted in the aggregate call above
-  Xn <- subset(Xn, Freq > 0)
+  Xn <- Xn[which(Xn$Freq > 0),]
 
   # combine bin values and counts
   C <- data.frame(Xb[,-(1:ncol(X))], n=Xn$Freq)
